@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════════════════════════
    FLASHCARD PRO — styles.css
-   Complete design system
+   Complete design system & responsive layout
    ═══════════════════════════════════════════════════════════════════ */
 
 /* ── RESET ────────────────────────────────────────────────────────── */
@@ -159,7 +159,6 @@ body {
 [data-theme*="glass"] .grade-btn.good  { background: rgba(0,204,106,0.15); border-color: rgba(0,204,106,0.3); }
 [data-theme*="glass"] .grade-btn.easy  { background: rgba(0,207,255,0.15); border-color: rgba(0,207,255,0.3); }
 
-/* Force solid backgrounds on native dropdown options */
 option { background-color: var(--bg2); color: var(--text); }
 [data-theme="glass-dark"] option { background-color: #1a1a2e; color: #ffffff; }
 [data-theme="glass-light"] option { background-color: #f8fafc; color: #0f172a; }
@@ -905,7 +904,7 @@ b.bionic {
   display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;
 }
 .grade-btn {
-  display: flex; flex-direction: column; align-items: center; gap: 1px;
+  display: flex; flex-direction: align-items: center; gap: 1px;
   padding: 7px 6px; border-radius: var(--radius-sm);
   border: 2px solid; cursor: pointer; transition: all var(--t);
   position: relative;
@@ -1054,7 +1053,6 @@ kbd {
 .study-overlay.focus-mode .study-answer-section { padding-bottom: 16px; }
 .study-btn-sm.focus-active { color: var(--accent2); border-color: var(--accent2); }
 
-/* Focus exit button — hidden by default, shown only in focus mode */
 .focus-exit-btn {
   display: none;
   position: absolute; top: 12px; right: 16px; z-index: 20;
@@ -1209,7 +1207,6 @@ kbd {
 }
 .subdeck-due.none { color: var(--text-dim); }
 
-/* Sidebar collapse toggle */
 .sdeck-toggle {
   background: none; border: none; color: var(--text-dim);
   font-size: 0.7rem; cursor: pointer; padding: 0 2px;
@@ -1221,7 +1218,6 @@ kbd {
 .sdeck-children { overflow: hidden; transition: max-height 0.3s ease; }
 .sdeck-children.collapsed { max-height: 0 !important; }
 
-/* Sidebar tree */
 .sidebar-subdeck-item {
   display: flex; align-items: center; gap: 6px;
   padding: 6px 10px 6px 24px;
@@ -1236,18 +1232,16 @@ kbd {
   margin-left: 18px; margin-bottom: 2px;
 }
 
-/* Breadcrumb parent */
 .bc-parent {
   color: var(--text-dim); cursor: pointer; font-size: 0.82rem;
   transition: color var(--t);
 }
 .bc-parent:hover { color: var(--accent); }
 
-/* ─── CONFIDENCE STRIP (compact row above flip) ───────────────────── */
+/* ─── CONFIDENCE STRIP ────────────────────────────────────────────── */
 .confidence-strip-row {
   display: flex; align-items: center; gap: 8px;
   padding: 4px 0; flex-shrink: 0; margin-bottom: 5px;
-  /* always flex, hidden via JS after flip */
 }
 .confidence-strip-label {
   font-size: 0.6rem; color: var(--text-dim); font-family: var(--font-mono);
@@ -1297,7 +1291,6 @@ kbd {
 .type-answer-input.correct-border { border-color: var(--c-good); }
 .type-answer-input.wrong-border   { border-color: var(--c-again); }
 
-/* Type answer toggle button */
 .btn-type-toggle {
   display: flex; align-items: center; gap: 6px;
   padding: 5px 14px; border-radius: var(--radius-sm);
@@ -1312,7 +1305,6 @@ kbd {
   background: var(--accent-dim); border-style: solid;
 }
 
-/* Answer comparison — compact, collapsible */
 .answer-comparison {
   background: var(--bg3); border: 1px solid var(--border);
   border-radius: var(--radius-sm); padding: 0;
@@ -1355,7 +1347,6 @@ kbd {
 .match-rate.medium { background: rgba(255,215,0,0.12);  color: var(--gold); }
 .match-rate.low    { background: rgba(255,61,90,0.12);  color: var(--c-again); }
 
-/* Voice button active state */
 .study-btn-sm.voice-active {
   color: var(--c-again); border-color: var(--c-again);
   animation: pulse 1s infinite;
@@ -1626,9 +1617,50 @@ kbd {
   :root { --sidebar-w: 200px; }
   .home-stats-row { grid-template-columns: repeat(3, 1fr); }
 }
+
 @media (max-width: 680px) {
-  .sidebar { position: fixed; top: 0; bottom: 0; left: 0; transform: translateX(-100%); transition: transform var(--t-slow); z-index: 200; width: 240px; min-width: 240px; }
-  .sidebar.mobile-open { transform: translateX(0); }
+  /* Mobile Sidebar Drawer */
+  .sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    transform: translateX(-100%);
+    transition: transform var(--t-slow);
+    z-index: 250;
+    width: 260px !important;
+    min-width: 260px !important;
+    box-shadow: 4px 0 24px rgba(0,0,0,0.6);
+  }
+  .sidebar.mobile-open {
+    transform: translateX(0) !important;
+  }
+  .sidebar.collapsed {
+    width: 260px !important;
+    min-width: 260px !important;
+    transform: translateX(-100%);
+  }
+  .sidebar.collapsed.mobile-open {
+    transform: translateX(0) !important;
+  }
+  .sidebar.collapsed .nav-label,
+  .sidebar.collapsed .brand-name,
+  .sidebar.collapsed .sidebar-search,
+  .sidebar.collapsed .sidebar-decks,
+  .sidebar.collapsed .sidebar-section-label,
+  .sidebar.collapsed .theme-toggle-row span:not(.toggle-slider) {
+    display: block !important;
+  }
+  .sidebar.collapsed .brand {
+    display: flex !important;
+  }
+  .sidebar.collapsed .theme-toggle-row {
+    display: flex !important;
+  }
+  .sidebar.collapsed .sidebar-toggle {
+    transform: none !important;
+  }
+
   .menu-btn { display: block; }
   
   .topbar { padding: 0 12px; gap: 8px; }
@@ -1636,16 +1668,76 @@ kbd {
   .topbar-right {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
-    scrollbar-width: none; /* Hide scrollbar in Firefox */
+    scrollbar-width: none;
     padding-bottom: 2px;
     min-width: 0;
   }
-  .topbar-right::-webkit-scrollbar { display: none; } /* Hide scrollbar in Webkit */
+  .topbar-right::-webkit-scrollbar { display: none; }
   .topbar-right > * { flex-shrink: 0; }
+
+  /* Responsive Headers & Action Controls */
+  .section-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  .tab-row {
+    width: 100%;
+    display: flex;
+  }
+  .tab-btn {
+    flex: 1;
+    text-align: center;
+    padding: 8px 6px;
+  }
+  .header-actions {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .header-actions .filter-input,
+  .header-actions input.filter-input,
+  .header-actions select.filter-input {
+    flex: 1;
+    min-width: 0;
+    width: auto;
+  }
+  .header-actions .btn-primary,
+  .header-actions .btn-sm {
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+
+  /* Deck Detail Header Responsive Layout */
+  .deck-detail-header {
+    padding: 16px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+  }
+  .deck-detail-actions {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .deck-detail-actions .btn-primary {
+    width: 100%;
+    text-align: center;
+    order: -1;
+  }
+  .deck-detail-actions .btn-sm {
+    flex: 1 1 calc(33.333% - 6px);
+    text-align: center;
+    padding: 6px 4px;
+    font-size: 0.75rem;
+  }
 
   .home-hero { flex-direction: column; gap: 14px; }
   .home-stats-row { grid-template-columns: 1fr 1fr; }
   .grade-row { grid-template-columns: 1fr 1fr; }
   .study-shell { padding: 0 12px; }
   .view-content { padding: 16px 14px 40px; }
+  .quiz-choices { grid-template-columns: 1fr; }
 }

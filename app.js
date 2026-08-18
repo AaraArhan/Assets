@@ -204,7 +204,7 @@ const D = {
   cardBackEditor:    $('cardBackEditor'),
   clozeEditor:       $('clozeEditor'),
   cardTags:          $('cardTags'),
-  cardNotes:         $('cardNotes'),
+  cardModalNotes:    $('cardModalNotes'),
 
   // Confirm modal
   confirmModal:      $('confirmModal'),
@@ -652,7 +652,7 @@ function renderDeckGrid(container, decks, allCards, emptyEl) {
 /* ── DECK DETAIL ─────────────────────────────────────────────────────── */
 async function loadDeckDetail(deckId) {
   if (!deckId) return;
-  
+
   let deck, cards = [];
   if (deckId === 'recent') {
     deck = { id: 'recent', name: 'Recent Decks', icon: '🕒', color: '#00cfff', description: 'Quick access to your active decks' };
@@ -853,8 +853,10 @@ async function renderDeckStats() {
   Stats.renderBarChart($('reviewBarChart'), days14,
     [{ data: counts, color: '#00ff88' }]);
 
-  // Ease line
-  const eases = cards.filter(c => c.repetitions > 0).map(c => c.easeFactor);
+  // Ease line (computed from FSRS difficulty: 11 - difficulty)
+  const eases = cards.filter(c => c.repetitions > 0).map(c => {
+    return c.difficulty !== undefined ? Number((11 - c.difficulty).toFixed(2)) : Number((c.easeFactor || 2.5).toFixed(2));
+  });
   const easeLabels = eases.map((_, i) => i + 1 < 10 ? `${i+1}` : '');
   Stats.renderLineChart($('easeLineChart'), easeLabels,
     [{ data: eases, color: '#00cfff' }]);
@@ -1139,7 +1141,7 @@ function clearCardModal() {
   D.clozeEditor.value         = '';
   D.cardTags.value            = '';
   D.cardNotes.value           = '';
-  
+
   if (D.occEditorImg) D.occEditorImg.src = '';
   if (D.occEditorBoxes) D.occEditorBoxes.innerHTML = '';
   occBoxesData = [];
@@ -1152,7 +1154,7 @@ function setCardType(type) {
   App.cardModal.type = type;
   document.querySelectorAll('.type-btn').forEach(b =>
     b.classList.toggle('active', b.dataset.type === type));
-  
+
   D.basicReversedFields.classList.toggle('hidden', type !== 'basic' && type !== 'reversed');
   D.clozeFields.classList.toggle('hidden', type !== 'cloze');
   if (D.occlusionFields) D.occlusionFields.classList.toggle('hidden', type !== 'occlusion');
@@ -1175,7 +1177,7 @@ async function saveCardModal(andAnother = false) {
 
   const tags   = D.cardTags.value.split(',').map(t => t.trim()).filter(Boolean);
   const hint   = D.cardHint.value.trim();
-  const notes  = D.cardNotes.value.trim();
+  const notes  = D.cardModalNotes.value.trim();
   const deckId = App.cardModal.deckId;
 
   if (App.cardModal.mode === 'create') {
@@ -1226,7 +1228,7 @@ async function saveCardModal(andAnother = false) {
                 <img src="${c.occImage}" style="max-width:100%;display:block;">`;
              (c.occBoxes||[]).forEach((b, i) => {
                 const isT = i === c.occTarget;
-                if (rev && isT) return; 
+                if (rev && isT) return;
                 const cls = isT ? 'target' : 'covered';
                 html += `<div class="occ-box-study ${cls}" style="left:${b.x}%;top:${b.y}%;width:${b.w}%;height:${b.h}%"></div>`;
              });
@@ -1242,7 +1244,7 @@ async function saveCardModal(andAnother = false) {
           D.cardFrontContent.innerHTML = renderMarkdown(c.front || '');
           D.cardBackContent.innerHTML  = renderMarkdown(c.back || '');
         }
-        
+
         if (c.hint || c.notes) {
           D.hintBtn.classList.remove('hidden');
           if (D.hintText && !D.hintText.classList.contains('hidden')) D.hintText.textContent = c.hint || c.notes;
@@ -1250,7 +1252,7 @@ async function saveCardModal(andAnother = false) {
           D.hintBtn.classList.add('hidden');
           if (D.hintText) D.hintText.classList.add('hidden');
         }
-        
+
         D.cardFrontTags.innerHTML = (c.tags || []).map(t => `<span class="card-tag">${escHtml(t)}</span>`).join('');
         const notesEl = document.querySelector('.card-notes');
         if (notesEl) notesEl.textContent = c.notes || '';
@@ -1410,7 +1412,7 @@ async function startStudy(deckId) {
     // Study all due
     return startStudyAll();
   }
-  
+
   let deck, cards;
   if (deckId === 'recent') {
     deck = { id: 'recent', name: 'Recent', dailyNew: 999, dailyReview: 999 };
@@ -1420,7 +1422,7 @@ async function startStudy(deckId) {
     deck  = await Storage.Decks.get(deckId);
     cards = await Storage.Cards.getByDeck(deckId);
   }
-  
+
   const queue = SRS.buildQueue(cards, {
     newLimit:    deck.dailyNew,
     reviewLimit: deck.dailyReview,
@@ -1496,54 +1498,12 @@ function showCard() {
   }
 
   if (found === -1) {
-    // No card ready right now — find the soonest one and wait
-    const soonest = Session.queue
-      .slice(Session.index)
-      .filter(c => c.dueDate)
-      .sort((a, b) => a.dueDate - b.dueDate)[0];
-
-    if (!soonest) return endStudy();
-
-    const waitMs = Math.max(500, soonest.dueDate - Date.now());
-    const waitSec = Math.ceil(waitMs / 1000);
-
-    // Show a waiting screen
-    D.cardFrontContent.innerHTML = `<div style="color:var(--text-dim);font-size:1rem;text-align:center">
-      ⏳ Next card ready in <strong style="color:var(--accent)" id="waitCountdown">${waitSec}s</strong>
-    </div>`;
-    D.cardBackContent.innerHTML  = '';
-    D.flashcard.classList.remove('flipped');
-    D.flipBtn.classList.add('hidden');
-    D.gradeRow.classList.add('hidden');
-    D.leechBadge.classList.add('hidden');
-    resetHint();
-
-    // Countdown display
-    let remaining = waitSec;
-    const countIv = setInterval(() => {
-      remaining--;
-      const el = document.getElementById('waitCountdown');
-      if (el) el.textContent = `${Math.max(0, remaining)}s`;
-    }, 1000);
-
-    setTimeout(() => {
-      clearInterval(countIv);
-      // Re-sort queue so earliest due card comes next
-      const ready   = [];
-      const waiting = [];
-      Session.queue.slice(Session.index).forEach(c => {
-        const rdy = !c.dueDate || c.interval > 0 || c.dueDate <= Date.now();
-        rdy ? ready.push(c) : waiting.push(c);
-      });
-      Session.queue = [
-        ...Session.queue.slice(0, Session.index),
-        ...ready,
-        ...waiting,
-      ];
-      showCard();
-    }, waitMs);
-
-    return;
+    // If all overdue cards are completed, proceed immediately with remaining intra-session learning steps
+    if (Session.index < Session.queue.length) {
+      found = Session.index;
+    } else {
+      return endStudy();
+    }
   }
 
   // Swap found card to current index position if needed
@@ -1602,7 +1562,7 @@ function showCard() {
           <img src="${card.occImage}" style="max-width:100%;display:block;">`;
        (card.occBoxes||[]).forEach((b, i) => {
           const isT = i === card.occTarget;
-          if (rev && isT) return; 
+          if (rev && isT) return;
           const cls = isT ? 'target' : 'covered';
           html += `<div class="occ-box-study ${cls}" style="left:${b.x}%;top:${b.y}%;width:${b.w}%;height:${b.h}%"></div>`;
        });
@@ -1660,11 +1620,11 @@ function showCard() {
   // Timed mode countdown
   if (Session.mode === 'timed') startTimedCountdown();
 
-  // Auto TTS — speak front of new card
+  // Auto TTS — speak front of new card (mask cloze brackets to prevent answer spoiler)
   const shownCard = Session.queue[Session.index];
   if (shownCard) {
     const frontText = shownCard.type === 'cloze'
-      ? stripHtml(shownCard.cloze)
+      ? stripHtml(shownCard.cloze.replace(/\{\{c\d+::([^}]+)\}\}/g, 'blank'))
       : stripHtml(shownCard.front);
     ttsSpeak(frontText);
   }
@@ -1713,7 +1673,7 @@ function flipCard() {
 
     // Auto TTS — speak back
     const backText = card.type === 'cloze'
-      ? stripHtml(card.cloze)
+      ? stripHtml(card.cloze.replace(/\{\{c\d+::([^}]+)\}\}/g, '$1'))
       : stripHtml(card.back);
     setTimeout(() => ttsSpeak(backText), 400);
   }
@@ -1763,6 +1723,9 @@ async function gradeCard(grade) {
   // Award XP
   addXP(grade);
 
+  // Confidence feedback analysis
+  logConfidenceResult(grade);
+
   // Apply SRS — skip in cram mode
   if (Session.mode !== 'cram') {
     await Storage.Cards.applyReview(card.id, grade);
@@ -1770,7 +1733,7 @@ async function gradeCard(grade) {
 
   // Record in session
   Session.data = Storage.Sessions.recordReview(Session.data, card.id, grade, timeMs, wasNew);
-  
+
   // Auto-save session to prevent data loss if user closes tab
   await Storage.Sessions.save(Session.data);
 
@@ -2571,19 +2534,19 @@ function applyBionic(html) {
   if (!App.settings.bionicReading) return html;
   const div = document.createElement('div');
   div.innerHTML = html;
-  
+
   function process(node) {
     if (node.nodeType === Node.TEXT_NODE) {
       const text = node.nodeValue;
       if (!text.trim()) return;
-      
+
       const parts = text.split(/([a-zA-Z0-9À-ÿ]+)/);
       const newHtml = parts.map(part => {
         if (!/^[a-zA-Z0-9À-ÿ]+$/.test(part)) return escHtml(part);
         const boldLen = Math.ceil(part.length / 2);
         return `<b class="bionic">${escHtml(part.substring(0, boldLen))}</b>${escHtml(part.substring(boldLen))}`;
       }).join('');
-      
+
       const temp = document.createElement('div');
       temp.innerHTML = newHtml;
       while (temp.firstChild) node.parentNode.insertBefore(temp.firstChild, node);
@@ -2593,7 +2556,7 @@ function applyBionic(html) {
       Array.from(node.childNodes).forEach(process);
     }
   }
-  
+
   Array.from(div.childNodes).forEach(process);
   return div.innerHTML;
 }
@@ -2720,7 +2683,7 @@ async function openCardHistory(cardId) {
       <div class="history-stat-lbl">Next Due</div>
     </div>
     <div class="history-stat">
-      <div class="history-stat-val">${(card.easeFactor || 2.5).toFixed(2)}</div>
+      <div class="history-stat-val">${(card.difficulty !== undefined ? (11 - card.difficulty) : (card.easeFactor || 2.5)).toFixed(2)}</div>
       <div class="history-stat-lbl">Ease</div>
     </div>
     <div class="history-stat">
@@ -2792,7 +2755,7 @@ async function renderSubdeckGrid(parentId, allCards) {
       .filter(d => deckLastReview[d.id])
       .sort((a,b) => deckLastReview[b.id] - deckLastReview[a.id])
       .slice(0, 12);
-    
+
     if (titleSpan) titleSpan.textContent = 'Recently Studied Decks';
     D.addSubdeckBtn.style.display = 'none';
   } else {
@@ -3160,8 +3123,8 @@ function ttsCurrentCard() {
     const card = Session.queue[Session.index];
     if (!card) return;
     const text = Session.flipped
-      ? (card.type === 'cloze' ? card.cloze : card.back)
-      : (card.type === 'cloze' ? card.cloze : card.front);
+      ? (card.type === 'cloze' ? stripHtml(card.cloze.replace(/\{\{c\d+::([^}]+)\}\}/g, '$1')) : stripHtml(card.back))
+      : (card.type === 'cloze' ? stripHtml(card.cloze.replace(/\{\{c\d+::([^}]+)\}\}/g, 'blank')) : stripHtml(card.front));
     speakText(text);
   }
 }
@@ -3188,7 +3151,7 @@ async function undoLastGrade() {
     if (last.wasNew) Session.data.newCount--;
     else             Session.data.reviewCount--;
   }
-  
+
   await Storage.Sessions.save(Session.data);
 
   D.studyUndoBtn.classList.add('undo-flash');
@@ -3491,7 +3454,7 @@ function toggleScratchpad() {
   if(D.studyScratchpadBtn) D.studyScratchpadBtn.classList.toggle('active', spActive);
   if(D.scratchpadClearBtn) D.scratchpadClearBtn.classList.toggle('hidden', !spActive);
   if(D.scratchpadCanvas) D.scratchpadCanvas.classList.toggle('active', spActive);
-  
+
   if(spActive && !spCtx && D.scratchpadCanvas) {
      spCtx = D.scratchpadCanvas.getContext('2d');
      resizeScratchpad();
@@ -3507,7 +3470,16 @@ function clearScratchpad() { if(spCtx && D.scratchpadCanvas) spCtx.clearRect(0,0
 
 if (D.scratchpadCanvas) {
   D.scratchpadCanvas.addEventListener('pointerdown', e => { spDrawing = true; spCtx.beginPath(); spCtx.moveTo(e.offsetX, e.offsetY); });
-  D.scratchpadCanvas.addEventListener('pointermove', e => { if(spDrawing){ spCtx.lineTo(e.offsetX, e.offsetY); spCtx.strokeStyle = 'var(--accent)'; spCtx.lineWidth = 4; spCtx.lineCap = 'round'; spCtx.stroke(); }});
+  D.scratchpadCanvas.addEventListener('pointermove', e => {
+    if (spDrawing && spCtx) {
+      spCtx.lineTo(e.offsetX, e.offsetY);
+      const accentColor = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#00ff88';
+      spCtx.strokeStyle = accentColor;
+      spCtx.lineWidth = 4;
+      spCtx.lineCap = 'round';
+      spCtx.stroke();
+    }
+  });
   D.scratchpadCanvas.addEventListener('pointerup', () => spDrawing = false);
   D.scratchpadCanvas.addEventListener('pointerout', () => spDrawing = false);
 }
@@ -3533,7 +3505,7 @@ if (D.occImgInput) {
     reader.onload = ev => { occBase64 = ev.target.result; D.occEditorImg.src = occBase64; occBoxesData = []; renderOccBoxes(); };
     reader.readAsDataURL(file);
   });
-  
+
   D.occEditorWrap.addEventListener('pointerdown', e => {
     if(!occBase64) return;
     const rect = D.occEditorWrap.getBoundingClientRect();
@@ -3545,7 +3517,7 @@ if (D.occImgInput) {
     D.occEditorWrap.appendChild(occTempDiv);
     e.preventDefault();
   });
-  
+
   D.occEditorWrap.addEventListener('pointermove', e => {
     if(!occStart || !occTempDiv) return;
     const rect = D.occEditorWrap.getBoundingClientRect();
@@ -3556,7 +3528,7 @@ if (D.occImgInput) {
     occTempDiv.style.left = x + '%'; occTempDiv.style.top = y + '%';
     occTempDiv.style.width = w + '%'; occTempDiv.style.height = h + '%';
   });
-  
+
   D.occEditorWrap.addEventListener('pointerup', e => {
     if(!occStart || !occTempDiv) return;
     const rect = D.occEditorWrap.getBoundingClientRect();
@@ -3567,7 +3539,7 @@ if (D.occImgInput) {
     occTempDiv.remove(); occTempDiv = null; occStart = null;
     if(w > 2 && h > 2) { occBoxesData.push({ x, y, w, h }); renderOccBoxes(); }
   });
-  
+
   D.occClearBtn.addEventListener('click', () => { occBoxesData = []; renderOccBoxes(); });
 }
 
@@ -3630,7 +3602,14 @@ function bindCardPreview() {
 function bindEvents() {
 
   /* ── SIDEBAR & NAV ─── */
-  D.sidebarToggle.addEventListener('click', () => D.sidebar.classList.toggle('collapsed'));
+  D.sidebarToggle.addEventListener('click', () => {
+    if (window.innerWidth <= 680) {
+      D.sidebar.classList.remove('mobile-open');
+      D.sidebar.classList.remove('collapsed');
+    } else {
+      D.sidebar.classList.toggle('collapsed');
+    }
+  });
   D.menuBtn.addEventListener('click', (e) => {
     e.stopPropagation();
     D.sidebar.classList.toggle('mobile-open');
@@ -3934,7 +3913,7 @@ function bindEvents() {
   D.settingTheme.addEventListener('change',      () => { applyTheme(D.settingTheme.value); saveSetting('theme', D.settingTheme.value); });
   D.settingFontSize.addEventListener('change',   () => saveSetting('fontSize',    D.settingFontSize.value));
   D.settingAnimations.addEventListener('change', () => saveSetting('animations',  D.settingAnimations.checked));
-  
+
   if (D.settingBionicReading) D.settingBionicReading.addEventListener('change', () => saveSetting('bionicReading', D.settingBionicReading.checked));
   if (D.settingBionicColor) D.settingBionicColor.addEventListener('input', () => {
     saveSetting('bionicColor', D.settingBionicColor.value);
