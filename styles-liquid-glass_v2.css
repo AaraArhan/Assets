@@ -1,0 +1,299 @@
+/* FLASHCARD PRO | LIQUID GLASS V2
+   Load after your original styles.css.
+   Stable by design: no animated filters, no layout animations, no background-position animation.
+*/
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+
+:root {
+  --bg: oklch(14% .035 278);
+  --bg2: oklch(22% .045 278 / .82);
+  --bg3: oklch(28% .05 278 / .64);
+  --bg4: oklch(36% .06 278 / .5);
+  --border: oklch(90% .03 278 / .18);
+  --border2: oklch(94% .035 278 / .34);
+  --text: oklch(95% .018 278);
+  --text2: oklch(78% .028 278);
+  --text-dim: oklch(63% .035 278);
+  --accent: oklch(82% .14 161);
+  --accent-dim: oklch(82% .14 161 / .14);
+  --accent2: oklch(81% .13 207);
+  --accent3: oklch(76% .17 335);
+  --danger: oklch(70% .19 20);
+  --danger-dim: oklch(70% .19 20 / .14);
+  --warn: oklch(83% .14 78);
+  --gold: oklch(86% .14 91);
+  --c-new: oklch(81% .13 207);
+  --c-learning: oklch(83% .14 78);
+  --c-review: oklch(82% .14 161);
+  --c-relearning: oklch(70% .19 20);
+  --c-mature: oklch(76% .15 300);
+  --c-again: oklch(70% .19 20);
+  --c-hard: oklch(83% .14 78);
+  --c-good: oklch(77% .15 155);
+  --c-easy: oklch(81% .13 207);
+  --font: 'DM Sans', 'Segoe UI', system-ui, sans-serif;
+  --font-mono: 'Space Mono', 'JetBrains Mono', monospace;
+  --glass-blur: blur(20px) saturate(125%);
+  --glass-surface: linear-gradient(145deg, oklch(100% .025 278 / .13), oklch(100% .01 278 / .055));
+  --glass-surface-strong: linear-gradient(145deg, oklch(100% .035 278 / .18), oklch(100% .01 278 / .075));
+  --glass-shadow: 0 18px 48px oklch(5% .04 278 / .3), inset 0 1px 0 oklch(100% .04 278 / .16);
+  --glass-shadow-hover: 0 24px 60px oklch(5% .04 278 / .38), inset 0 1px 0 oklch(100% .05 278 / .2);
+  --t: .2s cubic-bezier(.16, 1, .3, 1);
+  --t-slow: .34s cubic-bezier(.16, 1, .3, 1);
+}
+
+/* Use either body[data-theme] or any existing ancestor[data-theme]. */
+[data-theme="glass-dark"], [data-theme="glass-light"] {
+  --font: 'DM Sans', 'Segoe UI', system-ui, sans-serif;
+  --font-mono: 'Space Mono', 'JetBrains Mono', monospace;
+}
+
+body[data-theme="glass-dark"],
+[data-theme="glass-dark"] body {
+  background:
+    radial-gradient(760px 480px at 8% 0%, oklch(43% .17 305 / .28), transparent 66%),
+    radial-gradient(720px 520px at 100% 12%, oklch(45% .14 207 / .23), transparent 68%),
+    radial-gradient(620px 520px at 58% 100%, oklch(37% .14 161 / .14), transparent 70%),
+    oklch(14% .035 278);
+  background-attachment: fixed;
+  font-family: var(--font);
+}
+
+body[data-theme="glass-light"],
+[data-theme="glass-light"] body {
+  --bg: oklch(94% .025 245);
+  --bg2: oklch(100% .01 245 / .74);
+  --bg3: oklch(98% .018 245 / .7);
+  --bg4: oklch(92% .03 245 / .62);
+  --border: oklch(62% .04 245 / .18);
+  --border2: oklch(50% .05 245 / .3);
+  --text: oklch(20% .04 255);
+  --text2: oklch(38% .035 255);
+  --text-dim: oklch(52% .04 255);
+  background:
+    radial-gradient(700px 500px at 5% 0%, oklch(82% .14 335 / .22), transparent 66%),
+    radial-gradient(700px 520px at 100% 12%, oklch(84% .12 207 / .26), transparent 68%),
+    oklch(94% .025 245);
+  background-attachment: fixed;
+  font-family: var(--font);
+}
+
+/* Prevent the old theme's gradient stored in --bg from creating repaint flashes. */
+body[data-theme="glass-dark"] *,
+body[data-theme="glass-light"] * { font-family: inherit; }
+
+/* One shared surface rule. Keep this list aligned with your existing components. */
+[data-theme*="glass"] .sidebar,
+[data-theme*="glass"] .topbar,
+[data-theme*="glass"] .stat-card,
+[data-theme*="glass"] .deck-card,
+[data-theme*="glass"] .deck-detail-header,
+[data-theme*="glass"] .card-list-item,
+[data-theme*="glass"] .chart-card,
+[data-theme*="glass"] .settings-group,
+[data-theme*="glass"] .modal,
+[data-theme*="glass"] .flashcard-face,
+[data-theme*="glass"] .quiz-card,
+[data-theme*="glass"] .quiz-choice,
+[data-theme*="glass"] .home-hero,
+[data-theme*="glass"] .subdeck-card,
+[data-theme*="glass"] .toast,
+[data-theme*="glass"] .mistake-stat-card,
+[data-theme*="glass"] .mistake-card,
+[data-theme*="glass"] .answer-comparison,
+[data-theme*="glass"] .history-card-preview,
+[data-theme*="glass"] .history-stat,
+[data-theme*="glass"] .history-row,
+[data-theme*="glass"] .rel-result-item,
+[data-theme*="glass"] .rel-linked-item,
+[data-theme*="glass"] .summary-shell,
+[data-theme*="glass"] .xp-bar-wrap,
+[data-theme*="glass"] .rich-editor-wrap {
+  background: var(--glass-surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--glass-shadow);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+}
+
+[data-theme*="glass"] .sidebar {
+  background: linear-gradient(180deg, oklch(24% .05 278 / .86), oklch(17% .04 278 / .8));
+  border-right-color: var(--border);
+}
+[data-theme*="glass"] .topbar { background: oklch(24% .05 278 / .76); }
+[data-theme="glass-light"] .sidebar { background: oklch(100% .01 245 / .62); }
+[data-theme="glass-light"] .topbar { background: oklch(100% .01 245 / .7); }
+
+/* Stable interaction: animate only transform, opacity, and box-shadow. */
+[data-theme*="glass"] button,
+[data-theme*="glass"] .deck-card,
+[data-theme*="glass"] .stat-card,
+[data-theme*="glass"] .card-list-item,
+[data-theme*="glass"] .subdeck-card,
+[data-theme*="glass"] .flashcard-face,
+[data-theme*="glass"] .quiz-choice,
+[data-theme*="glass"] .study-btn-sm,
+[data-theme*="glass"] .btn-primary,
+[data-theme*="glass"] .btn-secondary,
+[data-theme*="glass"] .btn-sm,
+[data-theme*="glass"] .btn-hero,
+[data-theme*="glass"] .btn-hero-alt,
+[data-theme*="glass"] .tab-btn,
+[data-theme*="glass"] .type-btn,
+[data-theme*="glass"] .btn-flip,
+[data-theme*="glass"] .grade-btn {
+  transition: transform var(--t), opacity var(--t), color var(--t), background-color var(--t), border-color var(--t), box-shadow var(--t);
+}
+
+[data-theme*="glass"] button:hover,
+[data-theme*="glass"] .deck-card:hover,
+[data-theme*="glass"] .stat-card:hover,
+[data-theme*="glass"] .card-list-item:hover,
+[data-theme*="glass"] .subdeck-card:hover,
+[data-theme*="glass"] .flashcard-face:hover,
+[data-theme*="glass"] .quiz-choice:hover:not(:disabled) {
+  transform: translateY(-2px);
+  border-color: var(--border2);
+  background: var(--glass-surface-strong);
+  box-shadow: var(--glass-shadow-hover);
+}
+
+/* No colored side stripe, which can look like a flash when lists re-render. */
+[data-theme*="glass"] .mistake-card {
+  border-left: 1px solid var(--border);
+  border-color: oklch(70% .19 20 / .36);
+  background: linear-gradient(145deg, oklch(70% .19 20 / .11), oklch(100% .01 278 / .05));
+}
+[data-theme*="glass"] .mistake-card:hover { border-color: oklch(70% .19 20 / .62); }
+[data-theme*="glass"] .deck-card::before {
+  height: 1px;
+  left: 18px;
+  right: 18px;
+  top: 0;
+  background: var(--deck-color, var(--accent));
+  opacity: .8;
+}
+
+/* Inputs, search, filters, editor, and compact controls */
+[data-theme*="glass"] .search-input,
+[data-theme*="glass"] .filter-input,
+[data-theme*="glass"] .settings-input,
+[data-theme*="glass"] .form-input,
+[data-theme*="glass"] .type-answer-input,
+[data-theme*="glass"] .study-btn-sm,
+[data-theme*="glass"] .btn-secondary,
+[data-theme*="glass"] .btn-sm,
+[data-theme*="glass"] .tab-btn,
+[data-theme*="glass"] .type-btn,
+[data-theme*="glass"] .conf-btn,
+[data-theme*="glass"] .btn-flip,
+[data-theme*="glass"] .btn-hero-alt {
+  background: oklch(100% .02 278 / .07);
+  border-color: var(--border);
+  color: var(--text2);
+}
+[data-theme*="glass"] :is(.search-input, .filter-input, .settings-input, .form-input, .type-answer-input):focus {
+  border-color: var(--accent2);
+  box-shadow: 0 0 0 3px oklch(81% .13 207 / .14), 0 0 20px oklch(81% .13 207 / .13);
+}
+[data-theme*="glass"] .rich-toolbar { background: oklch(100% .02 278 / .07); border-bottom-color: var(--border); }
+[data-theme*="glass"] .rich-editor { background: transparent; }
+
+/* Primary actions */
+[data-theme*="glass"] .btn-primary,
+[data-theme*="glass"] .btn-hero,
+[data-theme*="glass"] .study-now-btn {
+  color: oklch(15% .035 278);
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  border: 1px solid oklch(100% .04 278 / .34);
+  box-shadow: 0 12px 28px oklch(78% .14 185 / .22), inset 0 1px 0 oklch(100% .08 278 / .44);
+}
+[data-theme*="glass"] .btn-primary:hover,
+[data-theme*="glass"] .btn-hero:hover,
+[data-theme*="glass"] .study-now-btn:hover {
+  filter: brightness(1.05) saturate(1.08);
+  box-shadow: 0 18px 38px oklch(78% .14 185 / .32), inset 0 1px 0 oklch(100% .08 278 / .52);
+}
+
+/* Navigation and selected states */
+[data-theme*="glass"] .nav-item.active,
+[data-theme*="glass"] .sidebar-deck-item.active,
+[data-theme*="glass"] .sidebar-subdeck-item.active,
+[data-theme*="glass"] .tab-btn.active,
+[data-theme*="glass"] .type-btn.active,
+[data-theme*="glass"] .btn-type-toggle.active {
+  color: var(--accent);
+  background: var(--accent-dim);
+  border-color: oklch(82% .14 161 / .4);
+}
+[data-theme*="glass"] .nav-item:hover,
+[data-theme*="glass"] .sidebar-deck-item:hover,
+[data-theme*="glass"] .sidebar-subdeck-item:hover,
+[data-theme*="glass"] .cli-btn:hover,
+[data-theme*="glass"] .rtb-btn:hover,
+[data-theme*="glass"] .answer-comparison-header:hover {
+  background: oklch(100% .02 278 / .08);
+  color: var(--text);
+}
+
+/* Flashcard and study overlay */
+[data-theme*="glass"] .study-overlay {
+  background:
+    radial-gradient(720px 500px at 50% 0%, oklch(43% .16 305 / .22), transparent 70%),
+    radial-gradient(720px 500px at 100% 100%, oklch(43% .14 207 / .18), transparent 70%),
+    var(--bg);
+  background-attachment: fixed;
+}
+[data-theme*="glass"] .flashcard-face,
+[data-theme*="glass"] .quiz-card {
+  background: var(--glass-surface-strong);
+  box-shadow: 0 30px 75px oklch(5% .04 278 / .43), inset 0 1px 0 oklch(100% .05 278 / .2);
+}
+[data-theme*="glass"] .flashcard-face.back { background: linear-gradient(145deg, oklch(81% .13 207 / .1), oklch(100% .01 278 / .06)); }
+[data-theme*="glass"] .btn-flip:hover { color: var(--accent2); border-color: var(--accent2); }
+
+/* SRS and grading states */
+[data-theme*="glass"] .grade-btn.again { background: oklch(70% .19 20 / .12); border-color: oklch(70% .19 20 / .32); }
+[data-theme*="glass"] .grade-btn.hard { background: oklch(83% .14 78 / .12); border-color: oklch(83% .14 78 / .32); }
+[data-theme*="glass"] .grade-btn.good { background: oklch(77% .15 155 / .12); border-color: oklch(77% .15 155 / .32); }
+[data-theme*="glass"] .grade-btn.easy { background: oklch(81% .13 207 / .12); border-color: oklch(81% .13 207 / .32); }
+[data-theme*="glass"] .grade-btn.again:hover { border-color: var(--c-again); }
+[data-theme*="glass"] .grade-btn.hard:hover { border-color: var(--c-hard); }
+[data-theme*="glass"] .grade-btn.good:hover { border-color: var(--c-good); }
+[data-theme*="glass"] .grade-btn.easy:hover { border-color: var(--c-easy); }
+
+/* Fixed visual bugs from the original glass rules. */
+[data-theme*="glass"] .modal-backdrop { background: oklch(8% .04 278 / .72); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+[data-theme*="glass"] .modal { background: var(--glass-surface-strong); }
+[data-theme*="glass"] .browse-table-wrap { border-color: var(--border); box-shadow: var(--glass-shadow); }
+[data-theme*="glass"] .browse-table th { background: oklch(25% .05 278 / .86); }
+[data-theme*="glass"] .browse-table tr:hover td { background: oklch(100% .02 278 / .06); }
+[data-theme*="glass"] .card-content blockquote { border-left: 1px solid var(--accent); }
+[data-theme*="glass"] .summary-icon,
+[data-theme*="glass"] .streak-celebrate,
+[data-theme*="glass"] .leech-badge,
+[data-theme*="glass"] .study-btn-sm.voice-active { animation: none; }
+
+/* Focus rings replace the old outline removal. */
+[data-theme*="glass"] :is(button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 3px solid oklch(81% .13 207 / .9);
+  outline-offset: 3px;
+}
+
+/* Keep your existing responsive layout, but make the glass surfaces stable on mobile. */
+@media (max-width: 680px) {
+  [data-theme*="glass"] .sidebar { backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); }
+  [data-theme*="glass"] .home-hero { align-items: stretch; }
+  [data-theme*="glass"] .topbar { background: oklch(24% .05 278 / .86); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-theme*="glass"] *,
+  [data-theme*="glass"] *::before,
+  [data-theme*="glass"] *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}

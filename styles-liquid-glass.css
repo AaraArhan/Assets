@@ -1,0 +1,343 @@
+/*
+  FLASHCARD PRO: LIQUID GLASS THEME OVERRIDE
+  Drop this file AFTER your existing styles.css.
+  It preserves your current class names, layouts, themes, and JavaScript behavior.
+*/
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+
+:root {
+  --bg: oklch(13% .035 278);
+  --bg2: oklch(22% .045 278 / .72);
+  --bg3: oklch(29% .05 278 / .54);
+  --bg4: oklch(38% .06 278 / .46);
+  --border: oklch(86% .035 278 / .18);
+  --border2: oklch(92% .04 278 / .34);
+  --accent: oklch(82% .14 161);
+  --accent-dim: oklch(82% .14 161 / .13);
+  --accent2: oklch(81% .13 207);
+  --accent3: oklch(75% .18 335);
+  --text: oklch(95% .018 278);
+  --text2: oklch(78% .028 278);
+  --text-dim: oklch(62% .035 278);
+  --danger: oklch(70% .19 20);
+  --danger-dim: oklch(70% .19 20 / .14);
+  --warn: oklch(83% .14 78);
+  --gold: oklch(86% .14 91);
+
+  --c-new: oklch(81% .13 207);
+  --c-learning: oklch(83% .14 78);
+  --c-review: oklch(82% .14 161);
+  --c-relearning: oklch(70% .19 20);
+  --c-mature: oklch(76% .15 300);
+  --c-again: oklch(70% .19 20);
+  --c-hard: oklch(83% .14 78);
+  --c-good: oklch(77% .15 155);
+  --c-easy: oklch(81% .13 207);
+
+  --radius: 18px;
+  --radius-sm: 12px;
+  --radius-lg: 26px;
+  --shadow: 0 28px 80px oklch(5% .05 278 / .42), inset 0 1px 0 oklch(100% .03 278 / .13);
+  --shadow-sm: 0 12px 30px oklch(7% .04 278 / .28), inset 0 1px 0 oklch(100% .03 278 / .1);
+  --glow: 0 0 30px oklch(82% .14 161 / .22);
+  --glass-blur: blur(24px) saturate(135%);
+  --glass-edge: inset 0 1px 0 oklch(100% .04 278 / .15), 0 20px 50px oklch(6% .04 278 / .24);
+  --font: 'DM Sans', 'Segoe UI', system-ui, sans-serif;
+  --font-mono: 'Space Mono', 'JetBrains Mono', 'Fira Code', monospace;
+  --t: .22s cubic-bezier(.16, 1, .3, 1);
+  --t-slow: .42s cubic-bezier(.16, 1, .3, 1);
+}
+
+/* Activate the upgraded theme when your app is already using glass-dark. */
+[data-theme="glass-dark"] {
+  --bg: oklch(13% .035 278);
+  --bg2: oklch(22% .045 278 / .72);
+  --bg3: oklch(29% .05 278 / .54);
+  --bg4: oklch(38% .06 278 / .46);
+  --border: oklch(86% .035 278 / .18);
+  --border2: oklch(92% .04 278 / .34);
+  --text: oklch(95% .018 278);
+  --text2: oklch(78% .028 278);
+  --text-dim: oklch(62% .035 278);
+}
+
+html { font-optical-sizing: auto; }
+body {
+  font-family: var(--font);
+  color: var(--text);
+  background:
+    radial-gradient(800px 520px at 7% 0%, oklch(42% .17 306 / .3), transparent 65%),
+    radial-gradient(760px 540px at 100% 8%, oklch(45% .14 208 / .25), transparent 64%),
+    radial-gradient(700px 540px at 55% 100%, oklch(37% .14 161 / .15), transparent 65%),
+    var(--bg);
+  background-attachment: fixed;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: .14;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='.16'/%3E%3C/svg%3E");
+  mix-blend-mode: overlay;
+}
+
+/* Shared liquid surface. This is intentionally limited to existing UI surfaces. */
+[data-theme*="glass"] .sidebar,
+[data-theme*="glass"] .topbar,
+[data-theme*="glass"] .stat-card,
+[data-theme*="glass"] .deck-card,
+[data-theme*="glass"] .deck-detail-header,
+[data-theme*="glass"] .card-list-item,
+[data-theme*="glass"] .chart-card,
+[data-theme*="glass"] .settings-group,
+[data-theme*="glass"] .modal,
+[data-theme*="glass"] .flashcard-face,
+[data-theme*="glass"] .quiz-card,
+[data-theme*="glass"] .quiz-choice,
+[data-theme*="glass"] .home-hero,
+[data-theme*="glass"] .subdeck-card,
+[data-theme*="glass"] .toast,
+[data-theme*="glass"] .mistake-stat-card,
+[data-theme*="glass"] .mistake-card,
+[data-theme*="glass"] .answer-comparison,
+[data-theme*="glass"] .history-card-preview,
+[data-theme*="glass"] .history-stat,
+[data-theme*="glass"] .history-row,
+[data-theme*="glass"] .rel-result-item,
+[data-theme*="glass"] .rel-linked-item,
+[data-theme*="glass"] .xp-bar-wrap,
+[data-theme*="glass"] .rich-editor-wrap,
+[data-theme*="glass"] .summary-shell {
+  background: linear-gradient(135deg, oklch(100% .02 278 / .11), oklch(100% .01 278 / .035));
+  border: 1px solid var(--border);
+  box-shadow: var(--glass-edge);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+}
+
+[data-theme*="glass"] .sidebar {
+  border-right-color: var(--border);
+  background: linear-gradient(180deg, oklch(24% .05 278 / .78), oklch(18% .04 278 / .68));
+}
+
+[data-theme*="glass"] .sidebar-header,
+[data-theme*="glass"] .sidebar-footer,
+[data-theme*="glass"] .topbar,
+[data-theme*="glass"] .modal-header,
+[data-theme*="glass"] .modal-footer,
+[data-theme*="glass"] .settings-group-title,
+[data-theme*="glass"] .settings-row,
+[data-theme*="glass"] .browse-table th,
+[data-theme*="glass"] .browse-table td,
+[data-theme*="glass"] .rich-toolbar,
+[data-theme*="glass"] .activity + .activity {
+  border-color: oklch(92% .03 278 / .12);
+}
+
+[data-theme*="glass"] .topbar,
+[data-theme*="glass"] .sidebar-header {
+  background: oklch(26% .05 278 / .62);
+}
+
+/* Remove the old colored side-stripe treatment and use a complete edge instead. */
+[data-theme*="glass"] .mistake-card {
+  border-left: 1px solid var(--border);
+  border-color: oklch(70% .19 20 / .35);
+  background: linear-gradient(135deg, oklch(70% .19 20 / .1), oklch(100% .01 278 / .035));
+}
+
+/* Inputs and compact controls */
+[data-theme*="glass"] .search-input,
+[data-theme*="glass"] .filter-input,
+[data-theme*="glass"] .settings-input,
+[data-theme*="glass"] .form-input,
+[data-theme*="glass"] .type-answer-input,
+[data-theme*="glass"] .study-btn-sm,
+[data-theme*="glass"] .btn-secondary,
+[data-theme*="glass"] .btn-sm,
+[data-theme*="glass"] .tab-btn,
+[data-theme*="glass"] .type-btn,
+[data-theme*="glass"] .conf-btn,
+[data-theme*="glass"] .btn-flip,
+[data-theme*="glass"] .quiz-choice,
+[data-theme*="glass"] .btn-hero-alt {
+  background: oklch(100% .02 278 / .065);
+  border-color: var(--border);
+  color: var(--text2);
+  transition: transform var(--t), border-color var(--t), color var(--t), background var(--t), box-shadow var(--t);
+}
+
+[data-theme*="glass"] .search-input:focus,
+[data-theme*="glass"] .filter-input:focus,
+[data-theme*="glass"] .settings-input:focus,
+[data-theme*="glass"] .form-input:focus,
+[data-theme*="glass"] .type-answer-input:focus {
+  border-color: var(--accent2);
+  box-shadow: 0 0 0 3px oklch(81% .13 207 / .13), 0 0 22px oklch(81% .13 207 / .12);
+}
+
+[data-theme*="glass"] .btn-primary,
+[data-theme*="glass"] .btn-hero,
+[data-theme*="glass"] .study-now-btn {
+  color: oklch(14% .035 278);
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  border: 1px solid oklch(100% .04 278 / .34);
+  box-shadow: 0 12px 28px oklch(78% .14 185 / .2), inset 0 1px 0 oklch(100% .08 278 / .45);
+  transition: transform var(--t), box-shadow var(--t), filter var(--t);
+}
+
+[data-theme*="glass"] .btn-primary:hover,
+[data-theme*="glass"] .btn-hero:hover,
+[data-theme*="glass"] .study-now-btn:hover {
+  transform: translateY(-2px);
+  filter: saturate(1.08) brightness(1.05);
+  box-shadow: 0 17px 38px oklch(78% .14 185 / .3), inset 0 1px 0 oklch(100% .08 278 / .55);
+}
+
+[data-theme*="glass"] .btn-secondary:hover,
+[data-theme*="glass"] .btn-sm:hover,
+[data-theme*="glass"] .btn-hero-alt:hover,
+[data-theme*="glass"] .tab-btn:hover,
+[data-theme*="glass"] .type-btn:hover,
+[data-theme*="glass"] .study-btn-sm:hover,
+[data-theme*="glass"] .btn-flip:hover {
+  transform: translateY(-1px);
+  border-color: var(--accent2);
+  color: var(--accent2);
+  background: oklch(81% .13 207 / .1);
+}
+
+[data-theme*="glass"] .btn-primary.danger,
+[data-theme*="glass"] .btn-sm.danger:hover {
+  background: oklch(70% .19 20 / .78);
+  color: var(--text);
+  border-color: oklch(70% .19 20 / .55);
+}
+
+/* Navigation and active states */
+[data-theme*="glass"] .nav-item:hover,
+[data-theme*="glass"] .sidebar-deck-item:hover,
+[data-theme*="glass"] .sidebar-subdeck-item:hover,
+[data-theme*="glass"] .deck-card-menu:hover,
+[data-theme*="glass"] .cli-btn:hover,
+[data-theme*="glass"] .rtb-btn:hover,
+[data-theme*="glass"] .answer-comparison-header:hover {
+  background: oklch(100% .02 278 / .08);
+  color: var(--text);
+}
+
+[data-theme*="glass"] .nav-item.active,
+[data-theme*="glass"] .sidebar-deck-item.active,
+[data-theme*="glass"] .sidebar-subdeck-item.active,
+[data-theme*="glass"] .tab-btn.active,
+[data-theme*="glass"] .type-btn.active,
+[data-theme*="glass"] .btn-type-toggle.active {
+  color: var(--accent);
+  background: var(--accent-dim);
+  border-color: oklch(82% .14 161 / .38);
+  box-shadow: inset 0 1px 0 oklch(100% .04 278 / .12);
+}
+
+[data-theme*="glass"] .brand-pro,
+[data-theme*="glass"] .stat-value,
+[data-theme*="glass"] .deck-card-due,
+[data-theme*="glass"] .subdeck-due,
+[data-theme*="glass"] .card-content strong,
+[data-theme*="glass"] .study-mode-badge,
+[data-theme*="glass"] .related-cards-label,
+[data-theme*="glass"] .related-card-chip,
+[data-theme*="glass"] .bulk-count {
+  color: var(--accent);
+}
+
+[data-theme*="glass"] .brand-icon { filter: drop-shadow(0 0 9px oklch(82% .14 161 / .6)); }
+[data-theme*="glass"] .hero-title,
+[data-theme*="glass"] .section-title,
+[data-theme*="glass"] .modal-title,
+[data-theme*="glass"] .deck-detail-name,
+[data-theme*="glass"] .summary-title { letter-spacing: -.035em; }
+
+/* Deck cards get a soft top highlight, not a heavy stripe. */
+[data-theme*="glass"] .deck-card::before {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--deck-color, var(--accent)), transparent);
+  opacity: .8;
+}
+[data-theme*="glass"] .deck-card:hover,
+[data-theme*="glass"] .stat-card:hover,
+[data-theme*="glass"] .card-list-item:hover,
+[data-theme*="glass"] .subdeck-card:hover,
+[data-theme*="glass"] .flashcard-face:hover {
+  border-color: var(--border2);
+  background: linear-gradient(135deg, oklch(100% .03 278 / .15), oklch(100% .01 278 / .055));
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-2px);
+}
+
+/* Study surface */
+[data-theme*="glass"] .study-overlay {
+  background:
+    radial-gradient(700px 420px at 50% 0%, oklch(42% .16 306 / .22), transparent 70%),
+    radial-gradient(700px 520px at 100% 100%, oklch(42% .14 207 / .18), transparent 70%),
+    var(--bg);
+}
+[data-theme*="glass"] .flashcard-face,
+[data-theme*="glass"] .quiz-card {
+  background: linear-gradient(145deg, oklch(100% .035 278 / .15), oklch(100% .01 278 / .055));
+  box-shadow: 0 34px 80px oklch(6% .04 278 / .42), inset 0 1px 0 oklch(100% .05 278 / .2);
+}
+[data-theme*="glass"] .flashcard-face.back { background: linear-gradient(145deg, oklch(81% .13 207 / .1), oklch(100% .01 278 / .055)); }
+[data-theme*="glass"] .card-type-badge.back { color: var(--accent2); }
+[data-theme*="glass"] .card-content em { color: var(--accent2); }
+
+/* SRS, grade, confidence, and semantic states */
+[data-theme*="glass"] .grade-btn.again { background: oklch(70% .19 20 / .12); border-color: oklch(70% .19 20 / .32); }
+[data-theme*="glass"] .grade-btn.hard { background: oklch(83% .14 78 / .12); border-color: oklch(83% .14 78 / .32); }
+[data-theme*="glass"] .grade-btn.good { background: oklch(77% .15 155 / .12); border-color: oklch(77% .15 155 / .32); }
+[data-theme*="glass"] .grade-btn.easy { background: oklch(81% .13 207 / .12); border-color: oklch(81% .13 207 / .32); }
+[data-theme*="glass"] .grade-btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-sm); }
+[data-theme*="glass"] .srs-tag,
+[data-theme*="glass"] .srs-pill,
+[data-theme*="glass"] .sc,
+[data-theme*="glass"] .sum-grade,
+[data-theme*="glass"] .match-rate,
+[data-theme*="glass"] .study-mode-badge {
+  border: 1px solid oklch(100% .03 278 / .13);
+  box-shadow: inset 0 1px 0 oklch(100% .03 278 / .1);
+}
+
+/* Tables, dividers, progress, and scrollbars */
+[data-theme*="glass"] .browse-table-wrap { border-color: var(--border); box-shadow: var(--shadow-sm); }
+[data-theme*="glass"] .browse-table th { background: oklch(26% .05 278 / .82); }
+[data-theme*="glass"] .browse-table tr:hover td { background: oklch(100% .02 278 / .06); }
+[data-theme*="glass"] .deck-card-progress,
+[data-theme*="glass"] .xp-bar-track,
+[data-theme*="glass"] .study-progress-bar,
+[data-theme*="glass"] .spaced-reading-bar,
+[data-theme*="glass"] .study-timed-bar { background: oklch(100% .02 278 / .1); }
+[data-theme*="glass"] .deck-card-progress-fill,
+[data-theme*="glass"] .study-progress-fill,
+[data-theme*="glass"] .spaced-reading-fill,
+[data-theme*="glass"] .timed-bar-fill { box-shadow: 0 0 14px oklch(82% .14 161 / .34); }
+[data-theme*="glass"] ::-webkit-scrollbar-thumb { background: oklch(86% .035 278 / .25); }
+[data-theme*="glass"] ::-webkit-scrollbar-thumb:hover { background: oklch(92% .04 278 / .4); }
+
+/* Accessible focus treatment */
+[data-theme*="glass"] :is(button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 3px solid oklch(81% .13 207 / .88);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-theme*="glass"] *,
+  [data-theme*="glass"] *::before,
+  [data-theme*="glass"] *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
